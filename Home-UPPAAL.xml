@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+clock time;
+clock wait;
+const int option = 4;
+const int val = 20;
+
+int[0,1] valid = 0;
+bool triggered_security = false;
+bool user_temp_set = false;
+
+
+
+
+// temperature and initial day time
+bool is_day = false; 
+int[0,35] temp=26;
+
+
+
+bool ac_triggered = false;
+bool heater_triggered = false;
+bool no_trigger = false;
+
+
+
+chan change;             // Sync channel
+
+
+bool alarm= false;
+
+
+
+chan set_temp,to_control_panel,fixinguser,interface1,changetomanual,alarming,homesecurity,start,SignUp,SignIn,Error,FaceID,Authentication,doorlock,lock,unlock,Save,interface,turning_lights_on,next,manualcontrol,tempreture,ac,heater,nothing,set_tempreture;
+chan options,detectingdaytime,lightstatus,manual,detecting,turnoff,turnon,stayoff,stayon,light, signinagain, login, enter,FaceValid,FaceNotValid;
+chan locksystem,tempcontrol, error,locking ,unlocking , manual_control,automatic_control;
+chan ACon, HeaterOn, idle, endsession1,endsession2,endsession3;
+chan save;
+
+
+</declaration>
+	<template>
+		<name>Server</name>
+		<parameter>int[1 ,2] option </parameter>
+		<declaration>clock wait;
+clock time;
+
+const int val = 20;
+int[0,1] valid;</declaration>
+		<location id="id0" x="-10084" y="-3615">
+			<name x="-10092" y="-3655">Start</name>
+		</location>
+		<location id="id1" x="-9884" y="-3439">
+			<name x="-9876" y="-3463">Error</name>
+		</location>
+		<location id="id2" x="-8967" y="-3331">
+			<name x="-8959" y="-3363">set_temperature</name>
+		</location>
+		<location id="id3" x="-9180" y="-3331">
+			<name x="-9188" y="-3363">heater</name>
+		</location>
+		<location id="id4" x="-9180" y="-3267">
+			<name x="-9188" y="-3299">nothing</name>
+		</location>
+		<location id="id5" x="-9180" y="-3411">
+			<name x="-9188" y="-3443">ac</name>
+		</location>
+		<location id="id6" x="-8228" y="-3646">
+			<name x="-8220" y="-3678">interface</name>
+		</location>
+		<location id="id7" x="-8636" y="-3961">
+			<name x="-8628" y="-3993">Save</name>
+		</location>
+		<location id="id8" x="-9772" y="-3663">
+			<name x="-9780" y="-3695">FaceID</name>
+		</location>
+		<location id="id9" x="-9876" y="-3615">
+			<name x="-9902" y="-3645">SignIn</name>
+		</location>
+		<location id="id10" x="-9486" y="-3332">
+			<name x="-9528" y="-3315">tempreture</name>
+		</location>
+		<location id="id11" x="-9392" y="-3943">
+			<name x="-9472" y="-3981">doorlock</name>
+		</location>
+		<location id="id12" x="-9630" y="-3612">
+			<name x="-9638" y="-3652">Authentication</name>
+		</location>
+		<location id="id13" x="-9273" y="-3765">
+			<name x="-9299" y="-3807">automatic</name>
+		</location>
+		<location id="id14" x="-9171" y="-3968">
+			<name x="-9205" y="-4011">manual</name>
+		</location>
+		<location id="id15" x="-9137" y="-3519">
+			<name x="-9179" y="-3502">isitnight</name>
+		</location>
+		<location id="id16" x="-9137" y="-3680">
+			<name x="-9171" y="-3714">turning_lights_on</name>
+		</location>
+		<location id="id17" x="-8950" y="-3519">
+			<name x="-8960" y="-3553">next</name>
+		</location>
+		<location id="id18" x="-8772" y="-3501">
+			<name x="-8797" y="-3493">security</name>
+		</location>
+		<location id="id19" x="-8772" y="-3773">
+			<name x="-8782" y="-3807">alarming</name>
+		</location>
+		<location id="id20" x="-8899" y="-4096">
+			<name x="-8909" y="-4130">lock</name>
+		</location>
+		<location id="id21" x="-8891" y="-3969">
+			<name x="-8901" y="-4003">unlock</name>
+		</location>
+		<location id="id22" x="-8551" y="-3518">
+			<name x="-8561" y="-3552">save2</name>
+		</location>
+		<location id="id23" x="-8389" y="-3578">
+			<name x="-8398" y="-3612">fix_user</name>
+		</location>
+		<location id="id24" x="-9486" y="-3629">
+			<name x="-9496" y="-3663">control_panel</name>
+		</location>
+		<location id="id25" x="-9486" y="-3493">
+			<name x="-9537" y="-3468">user_setting_temp</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id26">
+			<source ref="id24"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-9477" y="-3553">set_temp?</label>
+		</transition>
+		<transition id="id27">
+			<source ref="id25"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-9520" y="-3391">option &gt; 1</label>
+			<label kind="synchronisation" x="-9537" y="-3425">tempcontrol?</label>
+			<label kind="assignment" x="-9554" y="-3408">user_temp_set = true</label>
+			<nail x="-9486" y="-3413"/>
+		</transition>
+		<transition id="id28">
+			<source ref="id12"/>
+			<target ref="id24"/>
+			<label kind="guard" x="-9588" y="-3672">valid == 1</label>
+			<label kind="synchronisation" x="-9612" y="-3637">to_control_panel!</label>
+		</transition>
+		<transition id="id29">
+			<source ref="id23"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-8372" y="-3655">fixinguser!</label>
+			<nail x="-8313" y="-3612"/>
+		</transition>
+		<transition id="id30">
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-9214" y="-3867">changetomanual?</label>
+		</transition>
+		<transition id="id31">
+			<source ref="id0"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-10066" y="-3632">login!</label>
+		</transition>
+		<transition id="id32">
+			<source ref="id22"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-8525" y="-3527">endsession2!</label>
+		</transition>
+		<transition id="id33">
+			<source ref="id21"/>
+			<target ref="id7"/>
+		</transition>
+		<transition id="id34">
+			<source ref="id20"/>
+			<target ref="id7"/>
+			<nail x="-8704" y="-3994"/>
+			<nail x="-8670" y="-3978"/>
+		</transition>
+		<transition id="id35">
+			<source ref="id14"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-9044" y="-3961">unlocking?</label>
+		</transition>
+		<transition id="id36">
+			<source ref="id14"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-9044" y="-4079">locking?</label>
+		</transition>
+		<transition id="id37">
+			<source ref="id6"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-8559" y="-3263">options?</label>
+			<nail x="-8253" y="-3425"/>
+			<nail x="-8253" y="-3382"/>
+			<nail x="-8262" y="-3238"/>
+			<nail x="-9596" y="-3221"/>
+			<nail x="-9596" y="-3476"/>
+			<nail x="-9596" y="-3493"/>
+			<nail x="-9596" y="-3544"/>
+			<nail x="-9596" y="-3587"/>
+			<nail x="-9588" y="-3604"/>
+		</transition>
+		<transition id="id38">
+			<source ref="id2"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-8865" y="-3400">endsession3?</label>
+			<nail x="-8381" y="-3425"/>
+		</transition>
+		<transition id="id39">
+			<source ref="id18"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-8704" y="-3510">is_day == true</label>
+			<nail x="-8568" y="-3517"/>
+		</transition>
+		<transition id="id40">
+			<source ref="id19"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-8687" y="-3731">alarm== true</label>
+			<label kind="synchronisation" x="-8687" y="-3714">turnoff?</label>
+			<label kind="assignment" x="-8687" y="-3697">alarm=false</label>
+		</transition>
+		<transition id="id41">
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-8831" y="-3586">is_day==false &amp;&amp; alarm == false</label>
+			<label kind="synchronisation" x="-8831" y="-3646">turnon?</label>
+			<label kind="assignment" x="-8831" y="-3620">alarm = true</label>
+		</transition>
+		<transition id="id42">
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-8967" y="-3475">homesecurity?</label>
+		</transition>
+		<transition id="id43">
+			<source ref="id15"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-9112" y="-3509">is_day == true</label>
+		</transition>
+		<transition id="id44">
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-9078" y="-3637">is_day==true</label>
+			<label kind="synchronisation" x="-9044" y="-3612">turnoff?</label>
+			<label kind="assignment" x="-9018" y="-3594">is_day = false</label>
+		</transition>
+		<transition id="id45">
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-9248" y="-3645">is_day==false</label>
+			<label kind="synchronisation" x="-9197" y="-3621">turnon?</label>
+			<label kind="assignment" x="-9248" y="-3604">is_day = true</label>
+		</transition>
+		<transition id="id46">
+			<source ref="id13"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-9358" y="-3646">detecting?</label>
+			<nail x="-9273" y="-3510"/>
+		</transition>
+		<transition id="id47">
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-9418" y="-3850">automatic_control?</label>
+		</transition>
+		<transition id="id48">
+			<source ref="id11"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-9299" y="-3952">manual_control?</label>
+		</transition>
+		<transition id="id49">
+			<source ref="id8"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-9724" y="-3695">FaceNotValid!</label>
+			<label kind="assignment" x="-9716" y="-3711">valid = 0</label>
+			<nail x="-9764" y="-3671"/>
+			<nail x="-9652" y="-3671"/>
+			<nail x="-9652" y="-3631"/>
+		</transition>
+		<transition id="id50">
+			<source ref="id1"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-9964" y="-3543">signinagain!</label>
+			<nail x="-9884" y="-3599"/>
+		</transition>
+		<transition id="id51">
+			<source ref="id12"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-9772" y="-3463">valid == 0</label>
+			<label kind="synchronisation" x="-9766" y="-3432">error!</label>
+			<nail x="-9636" y="-3447"/>
+			<nail x="-9644" y="-3439"/>
+			<nail x="-9692" y="-3439"/>
+		</transition>
+		<transition id="id52">
+			<source ref="id24"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-9616" y="-3949">option &gt; 0</label>
+			<label kind="synchronisation" x="-9556" y="-3924">locksystem?</label>
+			<nail x="-9486" y="-3672"/>
+			<nail x="-9483" y="-3689"/>
+			<nail x="-9483" y="-3753"/>
+			<nail x="-9483" y="-3937"/>
+		</transition>
+		<transition id="id53">
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-8473" y="-3870">endsession1?</label>
+			<nail x="-8245" y="-3841"/>
+		</transition>
+		<transition id="id54">
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-9092" y="-3299">idle?</label>
+			<nail x="-9068" y="-3267"/>
+			<nail x="-9044" y="-3267"/>
+		</transition>
+		<transition id="id55">
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-9116" y="-3355">HeaterOn?</label>
+			<nail x="-9076" y="-3331"/>
+			<nail x="-9061" y="-3331"/>
+		</transition>
+		<transition id="id56">
+			<source ref="id5"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-8899" y="-3391">ACon?</label>
+			<nail x="-9076" y="-3411"/>
+		</transition>
+		<transition id="id57">
+			<source ref="id10"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-9292" y="-3387">temp &lt; 25</label>
+			<label kind="assignment" x="-9333" y="-3357">heater_triggered = true</label>
+			<nail x="-9444" y="-3332"/>
+		</transition>
+		<transition id="id58">
+			<source ref="id10"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-9292" y="-3315">temp == 25</label>
+			<label kind="assignment" x="-9316" y="-3264">no_trigger = true</label>
+			<nail x="-9452" y="-3324"/>
+			<nail x="-9316" y="-3323"/>
+			<nail x="-9316" y="-3267"/>
+		</transition>
+		<transition id="id59">
+			<source ref="id10"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-9299" y="-3459">temp &gt; 25</label>
+			<label kind="assignment" x="-9358" y="-3434">ac_triggered = true</label>
+			<nail x="-9452" y="-3340"/>
+			<nail x="-9436" y="-3340"/>
+			<nail x="-9316" y="-3339"/>
+			<nail x="-9316" y="-3411"/>
+		</transition>
+		<transition id="id60">
+			<source ref="id8"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-9749" y="-3577">FaceValid!</label>
+			<label kind="assignment" x="-9741" y="-3611">valid = 1</label>
+			<nail x="-9775" y="-3636"/>
+			<nail x="-9775" y="-3611"/>
+			<nail x="-9775" y="-3585"/>
+			<nail x="-9673" y="-3585"/>
+		</transition>
+		<transition id="id61">
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-9876" y="-3679">option &gt; 0</label>
+			<label kind="synchronisation" x="-9885" y="-3663">enter!</label>
+			<nail x="-9868" y="-3623"/>
+			<nail x="-9812" y="-3623"/>
+			<nail x="-9812" y="-3663"/>
+		</transition>
+	</template>
+	<template>
+		<name>Security_light</name>
+		<declaration>clock wait;</declaration>
+		<location id="id62" x="-578" y="-399">
+			<name x="-595" y="-442">start</name>
+		</location>
+		<location id="id63" x="-306" y="-399">
+			<name x="-331" y="-365">detectingdaytime</name>
+		</location>
+		<location id="id64" x="136" y="-391">
+			<name x="102" y="-425">lightstatus</name>
+		</location>
+		<init ref="id62"/>
+		<transition id="id65">
+			<source ref="id63"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-501" y="-306">endsession2?</label>
+			<nail x="-382" y="-306"/>
+			<nail x="-518" y="-306"/>
+		</transition>
+		<transition id="id66">
+			<source ref="id63"/>
+			<target ref="id63"/>
+			<label kind="guard" x="-340" y="-620">is_day == false|| alarm == false</label>
+			<label kind="synchronisation" x="-178" y="-603">homesecurity!</label>
+			<label kind="assignment" x="-280" y="-578">triggered_security = true</label>
+			<nail x="-76" y="-535"/>
+			<nail x="-331" y="-561"/>
+		</transition>
+		<transition id="id67">
+			<source ref="id64"/>
+			<target ref="id63"/>
+			<label kind="synchronisation" x="-42" y="-297">turnoff!</label>
+			<nail x="127" y="-297"/>
+		</transition>
+		<transition id="id68">
+			<source ref="id63"/>
+			<target ref="id64"/>
+			<label kind="synchronisation" x="-8" y="-416">turnon!</label>
+		</transition>
+		<transition id="id69">
+			<source ref="id62"/>
+			<target ref="id63"/>
+			<label kind="synchronisation" x="-493" y="-425">detecting!</label>
+		</transition>
+	</template>
+	<template>
+		<name>User</name>
+		<declaration>int[0,1] valid;</declaration>
+		<location id="id70" x="-1583" y="-581">
+			<name x="-1599" y="-613">Start</name>
+		</location>
+		<location id="id71" x="-1415" y="-413">
+			<name x="-1436" y="-403">Error</name>
+		</location>
+		<location id="id72" x="-51" y="-688">
+			<name x="-43" y="-712">interface</name>
+		</location>
+		<location id="id73" x="-365" y="-522">
+			<name x="-374" y="-564">set_temperature</name>
+		</location>
+		<location id="id74" x="-297" y="-926">
+			<name x="-314" y="-909">Save</name>
+		</location>
+		<location id="id75" x="-994" y="-878">
+			<name x="-1065" y="-913">doorlock</name>
+		</location>
+		<location id="id76" x="-1130" y="-629">
+			<name x="-1258" y="-654">Authentication</name>
+		</location>
+		<location id="id77" x="-1300" y="-654">
+			<name x="-1351" y="-688">FaceID</name>
+		</location>
+		<location id="id78" x="-1419" y="-578">
+			<name x="-1402" y="-595">SignIn</name>
+		</location>
+		<location id="id79" x="-764" y="-751">
+			<name x="-771" y="-783">automatic</name>
+		</location>
+		<location id="id80" x="-884" y="-1045">
+			<name x="-894" y="-1075">manual</name>
+		</location>
+		<location id="id81" x="-595" y="-518">
+			<name x="-603" y="-550">heater</name>
+		</location>
+		<location id="id82" x="-595" y="-454">
+			<name x="-603" y="-486">nothing</name>
+		</location>
+		<location id="id83" x="-595" y="-598">
+			<name x="-603" y="-630">ac</name>
+		</location>
+		<location id="id84" x="-833" y="-518">
+			<name x="-845" y="-547">tempreture</name>
+		</location>
+		<location id="id85" x="-527" y="-1088">
+			<name x="-537" y="-1122">lock</name>
+		</location>
+		<location id="id86" x="-569" y="-935">
+			<name x="-594" y="-918">unlock</name>
+		</location>
+		<location id="id87" x="-1037" y="-629">
+			<name x="-1028" y="-697">control_panel</name>
+		</location>
+		<location id="id88" x="-943" y="-518">
+			<name x="-994" y="-493">user_setting_temp</name>
+		</location>
+		<init ref="id70"/>
+		<transition id="id89">
+			<source ref="id79"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-866" y="-915">changetomanual!</label>
+		</transition>
+		<transition id="id90">
+			<source ref="id87"/>
+			<target ref="id88"/>
+			<label kind="synchronisation" x="-969" y="-654">set_temp!</label>
+			<nail x="-943" y="-629"/>
+		</transition>
+		<transition id="id91">
+			<source ref="id87"/>
+			<target ref="id75"/>
+			<label kind="synchronisation" x="-1037" y="-769">locksystem!</label>
+			<nail x="-1037" y="-875"/>
+		</transition>
+		<transition id="id92">
+			<source ref="id88"/>
+			<target ref="id84"/>
+			<label kind="synchronisation" x="-884" y="-595">tempcontrol!</label>
+			<nail x="-909" y="-518"/>
+			<nail x="-871" y="-518"/>
+		</transition>
+		<transition id="id93">
+			<source ref="id76"/>
+			<target ref="id87"/>
+			<label kind="synchronisation" x="-1156" y="-671">to_control_panel?</label>
+		</transition>
+		<transition id="id94">
+			<source ref="id79"/>
+			<target ref="id72"/>
+			<label kind="synchronisation" x="-518" y="-765">fixinguser?</label>
+			<nail x="-93" y="-725"/>
+		</transition>
+		<transition id="id95">
+			<source ref="id70"/>
+			<target ref="id78"/>
+			<label kind="synchronisation" x="-1512" y="-598">login?</label>
+		</transition>
+		<transition id="id96">
+			<source ref="id86"/>
+			<target ref="id74"/>
+		</transition>
+		<transition id="id97">
+			<source ref="id85"/>
+			<target ref="id74"/>
+			<nail x="-502" y="-1071"/>
+			<nail x="-357" y="-969"/>
+		</transition>
+		<transition id="id98">
+			<source ref="id80"/>
+			<target ref="id86"/>
+			<label kind="synchronisation" x="-799" y="-969">unlocking!</label>
+		</transition>
+		<transition id="id99">
+			<source ref="id80"/>
+			<target ref="id85"/>
+			<label kind="synchronisation" x="-714" y="-1096">locking!</label>
+		</transition>
+		<transition id="id100">
+			<source ref="id72"/>
+			<target ref="id87"/>
+			<label kind="synchronisation" x="-952" y="-399">options!</label>
+			<nail x="-59" y="-391"/>
+			<nail x="-1037" y="-382"/>
+		</transition>
+		<transition id="id101">
+			<source ref="id73"/>
+			<target ref="id72"/>
+			<label kind="synchronisation" x="-272" y="-637">endsession3!</label>
+		</transition>
+		<transition id="id102">
+			<source ref="id82"/>
+			<target ref="id73"/>
+			<label kind="synchronisation" x="-544" y="-459">idle!</label>
+			<nail x="-510" y="-462"/>
+		</transition>
+		<transition id="id103">
+			<source ref="id81"/>
+			<target ref="id73"/>
+			<label kind="synchronisation" x="-526" y="-539">HeaterOn!</label>
+			<nail x="-544" y="-522"/>
+		</transition>
+		<transition id="id104">
+			<source ref="id83"/>
+			<target ref="id73"/>
+			<label kind="synchronisation" x="-527" y="-620">ACon!</label>
+			<nail x="-544" y="-598"/>
+			<nail x="-510" y="-595"/>
+		</transition>
+		<transition id="id105">
+			<source ref="id75"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-917" y="-827">automatic_control!</label>
+		</transition>
+		<transition id="id106">
+			<source ref="id75"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-986" y="-977">manual_control!</label>
+		</transition>
+		<transition id="id107">
+			<source ref="id77"/>
+			<target ref="id76"/>
+			<label kind="synchronisation" x="-1232" y="-765">FaceNotValid?</label>
+			<nail x="-1300" y="-748"/>
+			<nail x="-1130" y="-739"/>
+			<nail x="-1130" y="-688"/>
+		</transition>
+		<transition id="id108">
+			<source ref="id76"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-1231" y="-413">error?</label>
+			<nail x="-1130" y="-424"/>
+			<nail x="-1130" y="-416"/>
+		</transition>
+		<transition id="id109">
+			<source ref="id71"/>
+			<target ref="id78"/>
+			<label kind="synchronisation" x="-1504" y="-496">signinagain?</label>
+			<nail x="-1415" y="-429"/>
+			<nail x="-1415" y="-565"/>
+		</transition>
+		<transition id="id110">
+			<source ref="id74"/>
+			<target ref="id72"/>
+			<label kind="synchronisation" x="-229" y="-960">endsession1!</label>
+			<nail x="-144" y="-926"/>
+			<nail x="-102" y="-926"/>
+		</transition>
+		<transition id="id111">
+			<source ref="id77"/>
+			<target ref="id76"/>
+			<label kind="synchronisation" x="-1302" y="-519">FaceValid?</label>
+			<nail x="-1302" y="-519"/>
+			<nail x="-1300" y="-518"/>
+			<nail x="-1223" y="-518"/>
+			<nail x="-1206" y="-518"/>
+			<nail x="-1158" y="-519"/>
+		</transition>
+		<transition id="id112">
+			<source ref="id78"/>
+			<target ref="id77"/>
+			<label kind="synchronisation" x="-1459" y="-691">enter?</label>
+			<nail x="-1417" y="-614"/>
+			<nail x="-1419" y="-629"/>
+			<nail x="-1419" y="-654"/>
+		</transition>
+		<transition id="id113">
+			<source ref="id84"/>
+			<target ref="id81"/>
+			<label kind="guard" x="-714" y="-552">temp &lt; 25</label>
+			<nail x="-817" y="-518"/>
+		</transition>
+		<transition id="id114">
+			<source ref="id84"/>
+			<target ref="id82"/>
+			<label kind="guard" x="-714" y="-493">temp == 25</label>
+			<nail x="-825" y="-510"/>
+			<nail x="-731" y="-510"/>
+			<nail x="-731" y="-454"/>
+		</transition>
+		<transition id="id115">
+			<source ref="id84"/>
+			<target ref="id83"/>
+			<label kind="guard" x="-722" y="-620">temp &gt; 25</label>
+			<nail x="-825" y="-526"/>
+			<nail x="-809" y="-526"/>
+			<nail x="-731" y="-526"/>
+			<nail x="-731" y="-598"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+SYSTEM = Server(2);
+
+
+
+USER = User();
+// List one or more processes to be composed into a system.
+system USER, SYSTEM, Security_light;
+</system>
+	<queries>
+		<query>
+			<formula>E[] (USER.automatic &amp;&amp; is_day == 0 imply SYSTEM.turning_lights_on)</formula>
+			<comment>On some path, lights are always turned on whenever it's dark and the user is in automatic mode.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-05 14:00:41 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] (SYSTEM.turning_lights_on imply (USER.automatic &amp;&amp; dark == 1))
+</formula>
+			<comment>To enforce that lights never turn on unless user is valid and it's night</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-02 17:14:51 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] not (USER.manual &amp;&amp; USER.automatic)
+</formula>
+			<comment>n all reachable states, it is never true that the user is simultaneously in both manual and automatic locations.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-03 18:25:35 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; SYSTEM.control_panel
+</formula>
+			<comment>4.	The system should allow at least one execution path to the control_panel.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-03 18:25:54 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A&lt;&gt; !(valid == 0 imply SYSTEM.control_panel == true)</formula>
+			<comment>5.	If the user is not authenticated, the system must never have the control panel access.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-03 18:26:32 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] (valid == 1 imply SYSTEM.control_panel == true)
+
+</formula>
+			<comment>if valid == 1 (user is authenticated),
+then the system must be currently in the control_panel location of the SYSTEM template.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-02 15:30:35 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; USER.Authentication
+
+
+</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2025-08-03 18:26:56 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A&lt;&gt; SYSTEM.control_panel
+</formula>
+			<comment>In all possible executions, the system will eventually reach the control_panel state.</comment>
+			<result outcome="failure" type="quality" timestamp="2025-08-05 14:01:12 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment>System will never go to deadlock</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-05 15:41:10 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] (triggered_security imply (is_day == false || alarm == false))
+</formula>
+			<comment>If it is night or the alarm is off, the system may trigger the home security mechanism — and it will only trigger in those conditions.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-03 18:29:36 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] (alarm == true imply (is_day == false &amp;&amp; USER.automatic))
+</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2025-08-03 18:30:10 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] (alarm == true imply (is_day == true &amp;&amp; USER.automatic))
+</formula>
+			<comment>The alarm can only be active when it is daytime and the user is in automatic mode.</comment>
+			<result outcome="failure" type="quality" timestamp="2025-08-05 15:41:22 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>E[] (ac_triggered imply (USER.user_setting_temp &amp;&amp; temp &gt; 25))
+</formula>
+			<comment>There exists at least one execution where AC is triggered only when the user is setting the temperature and the value is above 25.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-02 17:33:37 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] !(ac_triggered &amp;&amp; temp &lt;= 25)
+</formula>
+			<comment>It is never the case that AC is triggered when temperature is 25 or below.
+
+</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-05 15:41:32 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] !(ac_triggered &amp;&amp; heater_triggered)
+</formula>
+			<comment>AC and Heater are never active at the same time.
+
+</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-05 15:41:41 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] ((ac_triggered || heater_triggered) imply user_temp_set)
+</formula>
+			<comment>In all reachable states, if AC or Heater has been triggered, then the user must have already set the temperature.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-02 17:32:58 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>A[] (USER.Authentication imply (SYSTEM.interface imply SYSTEM.control_panel))
+
+</formula>
+			<comment>After authentication, the system must never be in interface without also being in control_panel.</comment>
+			<result outcome="success" type="quality" timestamp="2025-08-02 15:16:39 -0400">
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (SYSTEM.control_panel &amp;&amp; valid)
+</formula>
+			<comment>SAFETY
+
+It is possible for the system to reach the control panel with the user not being authenticated.(valid by default is equal to zero (not valid))</comment>
+			<result outcome="failure" type="quality" timestamp="2025-08-03 14:53:58 -0400">
+			</result>
+		</query>
+	</queries>
+</nta>
